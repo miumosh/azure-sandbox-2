@@ -1,0 +1,1139 @@
+{
+  "cases": [
+    {
+      "id": "F-A01",
+      "title": "完全一致 1 件",
+      "category": "success",
+      "file": "F-A01.json",
+      "request": {
+        "method": "POST",
+        "path": "/api/customers/search",
+        "auth": "valid",
+        "content_type": "application/json",
+        "body": {
+          "name_kana": "スズキ　ハナコ",
+          "birth_ymd": "19851215",
+          "cellular_phone_no": "080-3333-4444"
+        },
+        "raw": null
+      },
+      "expect": {
+        "status": 200,
+        "result_code": "MATCH",
+        "policy_no": [
+          "0000000004"
+        ]
+      },
+      "expect_via_aks": {
+        "status": 200,
+        "result_code": "MATCH",
+        "policy_no": [
+          "0000000004"
+        ]
+      },
+      "note": ""
+    },
+    {
+      "id": "F-A02",
+      "title": "同一人物が複数 policy_no を持つ (配列・policy_no 昇順)",
+      "category": "success",
+      "file": "F-A02.json",
+      "request": {
+        "method": "POST",
+        "path": "/api/customers/search",
+        "auth": "valid",
+        "content_type": "application/json",
+        "body": {
+          "name_kana": "タナカ　タロウ",
+          "birth_ymd": "19900101",
+          "cellular_phone_no": "090-1111-2222"
+        },
+        "raw": null
+      },
+      "expect": {
+        "status": 200,
+        "result_code": "MATCH",
+        "policy_no": [
+          "0000000001",
+          "0000000002",
+          "0000000003"
+        ]
+      },
+      "expect_via_aks": {
+        "status": 200,
+        "result_code": "MATCH",
+        "policy_no": [
+          "0000000001",
+          "0000000002",
+          "0000000003"
+        ]
+      },
+      "note": ""
+    },
+    {
+      "id": "F-A03",
+      "title": "姓名の区切りが半角スペース (正規化で全角へ)",
+      "category": "success",
+      "file": "F-A03.json",
+      "request": {
+        "method": "POST",
+        "path": "/api/customers/search",
+        "auth": "valid",
+        "content_type": "application/json",
+        "body": {
+          "name_kana": "タナカ タロウ",
+          "birth_ymd": "19900101",
+          "cellular_phone_no": "090-1111-2222"
+        },
+        "raw": null
+      },
+      "expect": {
+        "status": 200,
+        "result_code": "MATCH",
+        "policy_no": [
+          "0000000001",
+          "0000000002",
+          "0000000003"
+        ]
+      },
+      "expect_via_aks": {
+        "status": 200,
+        "result_code": "MATCH",
+        "policy_no": [
+          "0000000001",
+          "0000000002",
+          "0000000003"
+        ]
+      },
+      "note": "normalize_name: strip + 連続空白 -> U+3000 1 個"
+    },
+    {
+      "id": "F-A04",
+      "title": "前後・連続空白入り",
+      "category": "success",
+      "file": "F-A04.json",
+      "request": {
+        "method": "POST",
+        "path": "/api/customers/search",
+        "auth": "valid",
+        "content_type": "application/json",
+        "body": {
+          "name_kana": "  タナカ   タロウ  ",
+          "birth_ymd": "19900101",
+          "cellular_phone_no": "090-1111-2222"
+        },
+        "raw": null
+      },
+      "expect": {
+        "status": 200,
+        "result_code": "MATCH",
+        "policy_no": [
+          "0000000001",
+          "0000000002",
+          "0000000003"
+        ]
+      },
+      "expect_via_aks": {
+        "status": 200,
+        "result_code": "MATCH",
+        "policy_no": [
+          "0000000001",
+          "0000000002",
+          "0000000003"
+        ]
+      },
+      "note": ""
+    },
+    {
+      "id": "F-A05",
+      "title": "氏名が半角カナ (NFKC で全角化)",
+      "category": "success",
+      "file": "F-A05.json",
+      "request": {
+        "method": "POST",
+        "path": "/api/customers/search",
+        "auth": "valid",
+        "content_type": "application/json",
+        "body": {
+          "name_kana": "ﾀﾅｶ ﾀﾛｳ",
+          "birth_ymd": "19900101",
+          "cellular_phone_no": "090-1111-2222"
+        },
+        "raw": null
+      },
+      "expect": {
+        "status": 200,
+        "result_code": "MATCH",
+        "policy_no": [
+          "0000000001",
+          "0000000002",
+          "0000000003"
+        ]
+      },
+      "expect_via_aks": {
+        "status": 200,
+        "result_code": "MATCH",
+        "policy_no": [
+          "0000000001",
+          "0000000002",
+          "0000000003"
+        ]
+      },
+      "note": ""
+    },
+    {
+      "id": "F-A06",
+      "title": "生年月日が全角数字",
+      "category": "success",
+      "file": "F-A06.json",
+      "request": {
+        "method": "POST",
+        "path": "/api/customers/search",
+        "auth": "valid",
+        "content_type": "application/json",
+        "body": {
+          "name_kana": "タナカ　タロウ",
+          "birth_ymd": "１９９００１０１",
+          "cellular_phone_no": "090-1111-2222"
+        },
+        "raw": null
+      },
+      "expect": {
+        "status": 200,
+        "result_code": "MATCH",
+        "policy_no": [
+          "0000000001",
+          "0000000002",
+          "0000000003"
+        ]
+      },
+      "expect_via_aks": {
+        "status": 200,
+        "result_code": "MATCH",
+        "policy_no": [
+          "0000000001",
+          "0000000002",
+          "0000000003"
+        ]
+      },
+      "note": ""
+    },
+    {
+      "id": "F-A07",
+      "title": "電話が全角数字 + 長音記号区切り",
+      "category": "success",
+      "file": "F-A07.json",
+      "request": {
+        "method": "POST",
+        "path": "/api/customers/search",
+        "auth": "valid",
+        "content_type": "application/json",
+        "body": {
+          "name_kana": "タナカ　タロウ",
+          "birth_ymd": "19900101",
+          "cellular_phone_no": "０９０ー１１１１ー２２２２"
+        },
+        "raw": null
+      },
+      "expect": {
+        "status": 200,
+        "result_code": "MATCH",
+        "policy_no": [
+          "0000000001",
+          "0000000002",
+          "0000000003"
+        ]
+      },
+      "expect_via_aks": {
+        "status": 200,
+        "result_code": "MATCH",
+        "policy_no": [
+          "0000000001",
+          "0000000002",
+          "0000000003"
+        ]
+      },
+      "note": "normalize_phone: NFKC + ダッシュ類 -> ASCII ハイフン"
+    },
+    {
+      "id": "F-A08",
+      "title": "電話に空白混じり",
+      "category": "success",
+      "file": "F-A08.json",
+      "request": {
+        "method": "POST",
+        "path": "/api/customers/search",
+        "auth": "valid",
+        "content_type": "application/json",
+        "body": {
+          "name_kana": "タナカ　タロウ",
+          "birth_ymd": "19900101",
+          "cellular_phone_no": "090 - 1111 - 2222"
+        },
+        "raw": null
+      },
+      "expect": {
+        "status": 200,
+        "result_code": "MATCH",
+        "policy_no": [
+          "0000000001",
+          "0000000002",
+          "0000000003"
+        ]
+      },
+      "expect_via_aks": {
+        "status": 200,
+        "result_code": "MATCH",
+        "policy_no": [
+          "0000000001",
+          "0000000002",
+          "0000000003"
+        ]
+      },
+      "note": ""
+    },
+    {
+      "id": "F-A09",
+      "title": "電話が全角ハイフン",
+      "category": "success",
+      "file": "F-A09.json",
+      "request": {
+        "method": "POST",
+        "path": "/api/customers/search",
+        "auth": "valid",
+        "content_type": "application/json",
+        "body": {
+          "name_kana": "タナカ　タロウ",
+          "birth_ymd": "19900101",
+          "cellular_phone_no": "０９０－１１１１－２２２２"
+        },
+        "raw": null
+      },
+      "expect": {
+        "status": 200,
+        "result_code": "MATCH",
+        "policy_no": [
+          "0000000001",
+          "0000000002",
+          "0000000003"
+        ]
+      },
+      "expect_via_aks": {
+        "status": 200,
+        "result_code": "MATCH",
+        "policy_no": [
+          "0000000001",
+          "0000000002",
+          "0000000003"
+        ]
+      },
+      "note": ""
+    },
+    {
+      "id": "F-A10",
+      "title": "境界値 (氏名ちょうど 50 文字 / 閏日 20240229)",
+      "category": "success",
+      "file": "F-A10.json",
+      "request": {
+        "method": "POST",
+        "path": "/api/customers/search",
+        "auth": "valid",
+        "content_type": "application/json",
+        "body": {
+          "name_kana": "アアアアアアアアアアアアアアアアアアアアアアアア　イイイイイイイイイイイイイイイイイイイイイイイイイ",
+          "birth_ymd": "20240229",
+          "cellular_phone_no": "090-0000-0001"
+        },
+        "raw": null
+      },
+      "expect": {
+        "status": 200,
+        "result_code": "MATCH",
+        "policy_no": [
+          "AB12345678"
+        ]
+      },
+      "expect_via_aks": {
+        "status": 200,
+        "result_code": "MATCH",
+        "policy_no": [
+          "AB12345678"
+        ]
+      },
+      "note": ""
+    },
+    {
+      "id": "F-A11",
+      "title": "値が数値型 (str() で文字列化される)",
+      "category": "success",
+      "file": "F-A11.json",
+      "request": {
+        "method": "POST",
+        "path": "/api/customers/search",
+        "auth": "valid",
+        "content_type": "application/json",
+        "body": {
+          "name_kana": "タナカ　タロウ",
+          "birth_ymd": 19900101,
+          "cellular_phone_no": "090-1111-2222"
+        },
+        "raw": null
+      },
+      "expect": {
+        "status": 200,
+        "result_code": "MATCH",
+        "policy_no": [
+          "0000000001",
+          "0000000002",
+          "0000000003"
+        ]
+      },
+      "expect_via_aks": {
+        "status": 200,
+        "result_code": "MATCH",
+        "policy_no": [
+          "0000000001",
+          "0000000002",
+          "0000000003"
+        ]
+      },
+      "note": "JSON の型は問わない。19900101 -> '19900101'"
+    },
+    {
+      "id": "F-A12",
+      "title": "未知のキーを含む (無視される)",
+      "category": "success",
+      "file": "F-A12.json",
+      "request": {
+        "method": "POST",
+        "path": "/api/customers/search",
+        "auth": "valid",
+        "content_type": "application/json",
+        "body": {
+          "name_kana": "スズキ　ハナコ",
+          "birth_ymd": "19851215",
+          "cellular_phone_no": "080-3333-4444",
+          "policy_no": "9999999999",
+          "extra": true
+        },
+        "raw": null
+      },
+      "expect": {
+        "status": 200,
+        "result_code": "MATCH",
+        "policy_no": [
+          "0000000004"
+        ]
+      },
+      "expect_via_aks": {
+        "status": 200,
+        "result_code": "MATCH",
+        "policy_no": [
+          "0000000004"
+        ]
+      },
+      "note": ""
+    },
+    {
+      "id": "F-A13",
+      "title": "キーをクエリ ?code= で渡す",
+      "category": "success",
+      "file": "F-A13.json",
+      "request": {
+        "method": "POST",
+        "path": "/api/customers/search",
+        "auth": "query",
+        "content_type": "application/json",
+        "body": {
+          "name_kana": "スズキ　ハナコ",
+          "birth_ymd": "19851215",
+          "cellular_phone_no": "080-3333-4444"
+        },
+        "raw": null
+      },
+      "expect": {
+        "status": 200,
+        "result_code": "MATCH",
+        "policy_no": [
+          "0000000004"
+        ]
+      },
+      "expect_via_aks": {
+        "skip": "AKS 経由ではキー付与はアプリ側が行う"
+      },
+      "note": ""
+    },
+    {
+      "id": "F-B01",
+      "title": "存在しない人",
+      "category": "not_found",
+      "file": "F-B01.json",
+      "request": {
+        "method": "POST",
+        "path": "/api/customers/search",
+        "auth": "valid",
+        "content_type": "application/json",
+        "body": {
+          "name_kana": "ナイ　ヒト",
+          "birth_ymd": "20201231",
+          "cellular_phone_no": "000-0000-0000"
+        },
+        "raw": null
+      },
+      "expect": {
+        "status": 200,
+        "result_code": "NOT_FOUND",
+        "policy_no": []
+      },
+      "expect_via_aks": {
+        "status": 200,
+        "result_code": "NOT_FOUND",
+        "policy_no": []
+      },
+      "note": ""
+    },
+    {
+      "id": "F-B02",
+      "title": "氏名・生年月日は一致するが電話だけ違う (3 項目 AND)",
+      "category": "not_found",
+      "file": "F-B02.json",
+      "request": {
+        "method": "POST",
+        "path": "/api/customers/search",
+        "auth": "valid",
+        "content_type": "application/json",
+        "body": {
+          "name_kana": "タナカ　タロウ",
+          "birth_ymd": "19900101",
+          "cellular_phone_no": "090-9999-9999"
+        },
+        "raw": null
+      },
+      "expect": {
+        "status": 200,
+        "result_code": "NOT_FOUND",
+        "policy_no": []
+      },
+      "expect_via_aks": {
+        "status": 200,
+        "result_code": "NOT_FOUND",
+        "policy_no": []
+      },
+      "note": ""
+    },
+    {
+      "id": "F-B03",
+      "title": "姓名の区切りが無い",
+      "category": "not_found",
+      "file": "F-B03.json",
+      "request": {
+        "method": "POST",
+        "path": "/api/customers/search",
+        "auth": "valid",
+        "content_type": "application/json",
+        "body": {
+          "name_kana": "タナカタロウ",
+          "birth_ymd": "19900101",
+          "cellular_phone_no": "090-1111-2222"
+        },
+        "raw": null
+      },
+      "expect": {
+        "status": 200,
+        "result_code": "NOT_FOUND",
+        "policy_no": []
+      },
+      "expect_via_aks": {
+        "status": 200,
+        "result_code": "NOT_FOUND",
+        "policy_no": []
+      },
+      "note": "正規化は区切りを補わない。DB は 姓＜U+3000＞名 で格納"
+    },
+    {
+      "id": "F-B04",
+      "title": "氏名がカタカナでない (英字)",
+      "category": "not_found",
+      "file": "F-B04.json",
+      "request": {
+        "method": "POST",
+        "path": "/api/customers/search",
+        "auth": "valid",
+        "content_type": "application/json",
+        "body": {
+          "name_kana": "tanaka taro",
+          "birth_ymd": "19900101",
+          "cellular_phone_no": "090-1111-2222"
+        },
+        "raw": null
+      },
+      "expect": {
+        "status": 200,
+        "result_code": "NOT_FOUND",
+        "policy_no": []
+      },
+      "expect_via_aks": {
+        "status": 200,
+        "result_code": "NOT_FOUND",
+        "policy_no": []
+      },
+      "note": "Function は文字種を検証しない (長さのみ)。文字種検証は SQL 側だけ"
+    },
+    {
+      "id": "F-B05",
+      "title": "実在しない日付 20260230",
+      "category": "not_found",
+      "file": "F-B05.json",
+      "request": {
+        "method": "POST",
+        "path": "/api/customers/search",
+        "auth": "valid",
+        "content_type": "application/json",
+        "body": {
+          "name_kana": "タナカ　タロウ",
+          "birth_ymd": "20260230",
+          "cellular_phone_no": "090-1111-2222"
+        },
+        "raw": null
+      },
+      "expect": {
+        "status": 200,
+        "result_code": "NOT_FOUND",
+        "policy_no": []
+      },
+      "expect_via_aks": {
+        "status": 200,
+        "result_code": "NOT_FOUND",
+        "policy_no": []
+      },
+      "note": "Function は 8 桁数字のみ判定。実在日検証は SQL 側だけ"
+    },
+    {
+      "id": "F-B06",
+      "title": "電話が 2-4-4 (03-1111-2222)",
+      "category": "not_found",
+      "file": "F-B06.json",
+      "request": {
+        "method": "POST",
+        "path": "/api/customers/search",
+        "auth": "valid",
+        "content_type": "application/json",
+        "body": {
+          "name_kana": "タナカ　タロウ",
+          "birth_ymd": "19900101",
+          "cellular_phone_no": "03-1111-2222"
+        },
+        "raw": null
+      },
+      "expect": {
+        "status": 200,
+        "result_code": "NOT_FOUND",
+        "policy_no": []
+      },
+      "expect_via_aks": {
+        "status": 200,
+        "result_code": "NOT_FOUND",
+        "policy_no": []
+      },
+      "note": "実装の正規表現は ^[0-9]{2,4}-[0-9]{2,4}-[0-9]{4}$ で仕様書 (3-4-4) より緩い"
+    },
+    {
+      "id": "F-C01",
+      "title": "name_kana 欠落",
+      "category": "bad_request",
+      "file": "F-C01.json",
+      "request": {
+        "method": "POST",
+        "path": "/api/customers/search",
+        "auth": "valid",
+        "content_type": "application/json",
+        "body": {
+          "birth_ymd": "19900101",
+          "cellular_phone_no": "090-1111-2222"
+        },
+        "raw": null
+      },
+      "expect": {
+        "status": 400,
+        "result_code": "BAD_REQUEST",
+        "message_contains": "不足しています: name_kana"
+      },
+      "expect_via_aks": {
+        "status": 422,
+        "note": "FastAPI の Form(...) 必須チェック (Function には届かない)"
+      },
+      "note": ""
+    },
+    {
+      "id": "F-C02",
+      "title": "3 項目すべて欠落",
+      "category": "bad_request",
+      "file": "F-C02.json",
+      "request": {
+        "method": "POST",
+        "path": "/api/customers/search",
+        "auth": "valid",
+        "content_type": "application/json",
+        "body": {},
+        "raw": null
+      },
+      "expect": {
+        "status": 400,
+        "result_code": "BAD_REQUEST",
+        "message_contains": "不足しています: name_kana, birth_ymd, cellular_phone_no"
+      },
+      "expect_via_aks": {
+        "status": 422,
+        "note": "FastAPI の Form(...) 必須チェック (Function には届かない)"
+      },
+      "note": ""
+    },
+    {
+      "id": "F-C03",
+      "title": "birth_ymd が空文字 (欠落と同じ扱い)",
+      "category": "bad_request",
+      "file": "F-C03.json",
+      "request": {
+        "method": "POST",
+        "path": "/api/customers/search",
+        "auth": "valid",
+        "content_type": "application/json",
+        "body": {
+          "name_kana": "タナカ　タロウ",
+          "birth_ymd": "",
+          "cellular_phone_no": "090-1111-2222"
+        },
+        "raw": null
+      },
+      "expect": {
+        "status": 400,
+        "result_code": "BAD_REQUEST",
+        "message_contains": "不足しています: birth_ymd"
+      },
+      "expect_via_aks": {
+        "status": 422,
+        "note": "空文字の form 値は FastAPI が欠落 (missing) と判定する"
+      },
+      "note": "空文字は falsy のため必須チェックで弾かれる"
+    },
+    {
+      "id": "F-C04",
+      "title": "cellular_phone_no が null",
+      "category": "bad_request",
+      "file": "F-C04.json",
+      "request": {
+        "method": "POST",
+        "path": "/api/customers/search",
+        "auth": "valid",
+        "content_type": "application/json",
+        "body": {
+          "name_kana": "タナカ　タロウ",
+          "birth_ymd": "19900101",
+          "cellular_phone_no": null
+        },
+        "raw": null
+      },
+      "expect": {
+        "status": 400,
+        "result_code": "BAD_REQUEST",
+        "message_contains": "不足しています: cellular_phone_no"
+      },
+      "expect_via_aks": {
+        "status": 422,
+        "note": "空文字の form 値は FastAPI が欠落 (missing) と判定する"
+      },
+      "note": "form では null を送れないため AKS 経由では空文字 = 422 になる"
+    },
+    {
+      "id": "F-C05",
+      "title": "name_kana 51 文字",
+      "category": "bad_request",
+      "file": "F-C05.json",
+      "request": {
+        "method": "POST",
+        "path": "/api/customers/search",
+        "auth": "valid",
+        "content_type": "application/json",
+        "body": {
+          "name_kana": "アアアアアアアアアアアアアアアアアアアアアアアアア　イイイイイイイイイイイイイイイイイイイイイイイイイ",
+          "birth_ymd": "19900101",
+          "cellular_phone_no": "090-1111-2222"
+        },
+        "raw": null
+      },
+      "expect": {
+        "status": 400,
+        "result_code": "BAD_REQUEST",
+        "message_contains": "name_kana は全角カナ 50 文字以内"
+      },
+      "expect_via_aks": {
+        "status": 200,
+        "result_code": "BAD_REQUEST",
+        "message_contains": "name_kana は全角カナ 50 文字以内",
+        "note": "中継 API は Function の HTTP ステータスを引き継がない (常に 200 + result_code)"
+      },
+      "note": ""
+    },
+    {
+      "id": "F-C06",
+      "title": "birth_ymd 7 桁",
+      "category": "bad_request",
+      "file": "F-C06.json",
+      "request": {
+        "method": "POST",
+        "path": "/api/customers/search",
+        "auth": "valid",
+        "content_type": "application/json",
+        "body": {
+          "name_kana": "タナカ　タロウ",
+          "birth_ymd": "1990010",
+          "cellular_phone_no": "090-1111-2222"
+        },
+        "raw": null
+      },
+      "expect": {
+        "status": 400,
+        "result_code": "BAD_REQUEST",
+        "message_contains": "birth_ymd は YYYYMMDD"
+      },
+      "expect_via_aks": {
+        "status": 200,
+        "result_code": "BAD_REQUEST",
+        "message_contains": "birth_ymd は YYYYMMDD",
+        "note": "中継 API は Function の HTTP ステータスを引き継がない (常に 200 + result_code)"
+      },
+      "note": ""
+    },
+    {
+      "id": "F-C07",
+      "title": "birth_ymd が 8 文字だが非数字",
+      "category": "bad_request",
+      "file": "F-C07.json",
+      "request": {
+        "method": "POST",
+        "path": "/api/customers/search",
+        "auth": "valid",
+        "content_type": "application/json",
+        "body": {
+          "name_kana": "タナカ　タロウ",
+          "birth_ymd": "1990/1/1",
+          "cellular_phone_no": "090-1111-2222"
+        },
+        "raw": null
+      },
+      "expect": {
+        "status": 400,
+        "result_code": "BAD_REQUEST",
+        "message_contains": "birth_ymd は YYYYMMDD"
+      },
+      "expect_via_aks": {
+        "status": 200,
+        "result_code": "BAD_REQUEST",
+        "message_contains": "birth_ymd は YYYYMMDD",
+        "note": "中継 API は Function の HTTP ステータスを引き継がない (常に 200 + result_code)"
+      },
+      "note": ""
+    },
+    {
+      "id": "F-C08",
+      "title": "電話ハイフン無し",
+      "category": "bad_request",
+      "file": "F-C08.json",
+      "request": {
+        "method": "POST",
+        "path": "/api/customers/search",
+        "auth": "valid",
+        "content_type": "application/json",
+        "body": {
+          "name_kana": "タナカ　タロウ",
+          "birth_ymd": "19900101",
+          "cellular_phone_no": "09011112222"
+        },
+        "raw": null
+      },
+      "expect": {
+        "status": 400,
+        "result_code": "BAD_REQUEST",
+        "message_contains": "cellular_phone_no は XXX-XXXX-XXXX"
+      },
+      "expect_via_aks": {
+        "status": 200,
+        "result_code": "BAD_REQUEST",
+        "message_contains": "cellular_phone_no は XXX-XXXX-XXXX",
+        "note": "中継 API は Function の HTTP ステータスを引き継がない (常に 200 + result_code)"
+      },
+      "note": ""
+    },
+    {
+      "id": "F-C09",
+      "title": "電話が 3-4-3 (末尾 3 桁)",
+      "category": "bad_request",
+      "file": "F-C09.json",
+      "request": {
+        "method": "POST",
+        "path": "/api/customers/search",
+        "auth": "valid",
+        "content_type": "application/json",
+        "body": {
+          "name_kana": "タナカ　タロウ",
+          "birth_ymd": "19900101",
+          "cellular_phone_no": "090-1111-222"
+        },
+        "raw": null
+      },
+      "expect": {
+        "status": 400,
+        "result_code": "BAD_REQUEST",
+        "message_contains": "cellular_phone_no は XXX-XXXX-XXXX"
+      },
+      "expect_via_aks": {
+        "status": 200,
+        "result_code": "BAD_REQUEST",
+        "message_contains": "cellular_phone_no は XXX-XXXX-XXXX",
+        "note": "中継 API は Function の HTTP ステータスを引き継がない (常に 200 + result_code)"
+      },
+      "note": ""
+    },
+    {
+      "id": "F-C10",
+      "title": "電話の先頭が 5 桁",
+      "category": "bad_request",
+      "file": "F-C10.json",
+      "request": {
+        "method": "POST",
+        "path": "/api/customers/search",
+        "auth": "valid",
+        "content_type": "application/json",
+        "body": {
+          "name_kana": "タナカ　タロウ",
+          "birth_ymd": "19900101",
+          "cellular_phone_no": "09012-1111-2222"
+        },
+        "raw": null
+      },
+      "expect": {
+        "status": 400,
+        "result_code": "BAD_REQUEST",
+        "message_contains": "cellular_phone_no は XXX-XXXX-XXXX"
+      },
+      "expect_via_aks": {
+        "status": 200,
+        "result_code": "BAD_REQUEST",
+        "message_contains": "cellular_phone_no は XXX-XXXX-XXXX",
+        "note": "中継 API は Function の HTTP ステータスを引き継がない (常に 200 + result_code)"
+      },
+      "note": ""
+    },
+    {
+      "id": "F-C11",
+      "title": "壊れた JSON",
+      "category": "bad_request",
+      "file": "F-C11.txt",
+      "request": {
+        "method": "POST",
+        "path": "/api/customers/search",
+        "auth": "valid",
+        "content_type": "application/json",
+        "body": null,
+        "raw": "{\"name_kana\":"
+      },
+      "expect": {
+        "status": 400,
+        "result_code": "BAD_REQUEST",
+        "message_contains": "不正な JSON"
+      },
+      "expect_via_aks": {
+        "skip": "form では表現できない"
+      },
+      "note": ""
+    },
+    {
+      "id": "F-C12",
+      "title": "ボディが空",
+      "category": "bad_request",
+      "file": "F-C12.txt",
+      "request": {
+        "method": "POST",
+        "path": "/api/customers/search",
+        "auth": "valid",
+        "content_type": "application/json",
+        "body": null,
+        "raw": ""
+      },
+      "expect": {
+        "status": 400,
+        "result_code": "BAD_REQUEST",
+        "message_contains": "不正な JSON"
+      },
+      "expect_via_aks": {
+        "skip": "form では表現できない"
+      },
+      "note": ""
+    },
+    {
+      "id": "F-C13",
+      "title": "ボディが JSON 配列",
+      "category": "bad_request",
+      "file": "F-C13.txt",
+      "request": {
+        "method": "POST",
+        "path": "/api/customers/search",
+        "auth": "valid",
+        "content_type": "application/json",
+        "body": null,
+        "raw": "[]"
+      },
+      "expect": {
+        "status": 400,
+        "result_code": "BAD_REQUEST",
+        "message_contains": "JSON オブジェクトである必要"
+      },
+      "expect_via_aks": {
+        "skip": "form では表現できない"
+      },
+      "note": ""
+    },
+    {
+      "id": "F-C14",
+      "title": "ボディが JSON 文字列",
+      "category": "bad_request",
+      "file": "F-C14.txt",
+      "request": {
+        "method": "POST",
+        "path": "/api/customers/search",
+        "auth": "valid",
+        "content_type": "application/json",
+        "body": null,
+        "raw": "\"abc\""
+      },
+      "expect": {
+        "status": 400,
+        "result_code": "BAD_REQUEST",
+        "message_contains": "JSON オブジェクトである必要"
+      },
+      "expect_via_aks": {
+        "skip": "form では表現できない"
+      },
+      "note": ""
+    },
+    {
+      "id": "F-C15",
+      "title": "form 形式で直叩き (JSON でない)",
+      "category": "bad_request",
+      "file": "F-C15.txt",
+      "request": {
+        "method": "POST",
+        "path": "/api/customers/search",
+        "auth": "valid",
+        "content_type": "application/x-www-form-urlencoded",
+        "body": null,
+        "raw": "name_kana=%E3%82%BF%E3%83%8A%E3%82%AB&birth_ymd=19900101"
+      },
+      "expect": {
+        "status": 400,
+        "result_code": "BAD_REQUEST",
+        "message_contains": "不正な JSON"
+      },
+      "expect_via_aks": {
+        "skip": "AKS 経由は form が正しい送り方"
+      },
+      "note": "Function は Content-Type を見ずに JSON パースする"
+    },
+    {
+      "id": "F-D01",
+      "title": "Function キー無し",
+      "category": "platform",
+      "file": "F-D01.json",
+      "request": {
+        "method": "POST",
+        "path": "/api/customers/search",
+        "auth": "missing",
+        "content_type": "application/json",
+        "body": {
+          "name_kana": "スズキ　ハナコ",
+          "birth_ymd": "19851215",
+          "cellular_phone_no": "080-3333-4444"
+        },
+        "raw": null
+      },
+      "expect": {
+        "status": 401
+      },
+      "expect_via_aks": {
+        "skip": "キー付与は AKS アプリの責務"
+      },
+      "note": ""
+    },
+    {
+      "id": "F-D02",
+      "title": "Function キーが不正",
+      "category": "platform",
+      "file": "F-D02.json",
+      "request": {
+        "method": "POST",
+        "path": "/api/customers/search",
+        "auth": "invalid",
+        "content_type": "application/json",
+        "body": {
+          "name_kana": "スズキ　ハナコ",
+          "birth_ymd": "19851215",
+          "cellular_phone_no": "080-3333-4444"
+        },
+        "raw": null
+      },
+      "expect": {
+        "status": 401
+      },
+      "expect_via_aks": {
+        "skip": "キー付与は AKS アプリの責務"
+      },
+      "note": ""
+    },
+    {
+      "id": "F-D03",
+      "title": "GET メソッド (ルートは POST のみ)",
+      "category": "platform",
+      "file": "-",
+      "request": {
+        "method": "GET",
+        "path": "/api/customers/search",
+        "auth": "valid",
+        "content_type": "application/json",
+        "body": null,
+        "raw": null
+      },
+      "expect": {
+        "status": 404
+      },
+      "expect_via_aks": {
+        "skip": "AKS 側は別ルート"
+      },
+      "note": "Functions ホストがルート不一致として返す"
+    },
+    {
+      "id": "F-D04",
+      "title": "存在しないパス",
+      "category": "platform",
+      "file": "F-D04.json",
+      "request": {
+        "method": "POST",
+        "path": "/api/customers/searchx",
+        "auth": "valid",
+        "content_type": "application/json",
+        "body": {
+          "name_kana": "スズキ　ハナコ",
+          "birth_ymd": "19851215",
+          "cellular_phone_no": "080-3333-4444"
+        },
+        "raw": null
+      },
+      "expect": {
+        "status": 404
+      },
+      "expect_via_aks": {
+        "skip": "AKS 側は 404 (FastAPI)"
+      },
+      "note": ""
+    }
+  ]
+}

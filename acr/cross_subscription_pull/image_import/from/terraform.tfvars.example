@@ -1,0 +1,10 @@
+# サブスクリプション A (ソース ACR) -- to(B) の後に apply する
+subscription_id = "00000000-0000-0000-0000-000000000000"
+location        = "japaneast"
+
+# グローバル一意な ACR 名 (英数字 5-50 文字)
+acr_name = "acrimportsourceacrxxx"
+
+# to を先に apply し、その output を貼り付ける。
+#   cd ../to && terraform output -raw runner_identity_principal_id
+import_runner_principal_id = "00000000-0000-0000-0000-000000000000"

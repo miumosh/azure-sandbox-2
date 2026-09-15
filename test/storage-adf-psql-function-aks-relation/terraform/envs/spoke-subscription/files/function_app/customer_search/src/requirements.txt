@@ -1,0 +1,10 @@
+# Python v2 モデル (デコレーター方式) + Python 3.13 ランタイム前提。
+# azure-functions 2.x は Python 3.13+ が必須 (requires-python >=3.13)。
+#
+# バージョン制御方針: `~=` (compatible release) で「マイナー固定・パッチのみ自動更新」。
+#   azure-functions~=2.1.0 ⇒ >=2.1.0, ==2.1.*  （2.1.x は拾うが 2.2 以降には上がらない）
+#   floor は現行最新パッチに置く（= 可能な限り最新 ＋ パッチのみ自動取り込み）。
+# マイナー / メジャー更新は floor を意図的に引き上げて実施する（自動では上がらない）。
+azure-functions~=2.1.0
+psycopg[binary]~=3.3.4
+azure-identity~=1.25.3

@@ -1,0 +1,28 @@
+# ============================================================================
+# Spoke env 用 tfvars サンプル (機微情報 / 環境固有値 / cross-sub 参照のみ)
+# cp terraform.tfvars.sample terraform.tfvars して値を埋める。
+# それ以外の構成値 (prefix / location / DB 名 / AKS サイズ等) は locals.tf。
+# ============================================================================
+
+subscription_id = "00000000-0000-0000-0000-000000000000" # ci00-spoke-subscription
+
+# PostgreSQL 管理者パスワード (SQL 認証。テーブル DDL 投入など bootstrap 用に残す)
+psql_admin_password = "Replace-With-Strong-Password-#1"
+
+# PostgreSQL の Entra ID 管理者 (この ID で psql に AAD 接続し MI ロールを作成する)
+# object_id を空にすると Terraform 実行プリンシパルが管理者になる。
+# principal_name はその実ログイン名 (UPN 等) を必ず指定する。
+entra_admin_object_id      = "" # 例: $(az ad signed-in-user show --query id -o tsv)
+entra_admin_principal_name = "you@example.com"
+entra_admin_principal_type = "User"
+
+# ---- Hub 側 output を貼り付ける (Hub を apply してから設定) ----------------
+# 初回は空のままで Spoke を apply し、Hub apply 後に値を反映して再 apply する。
+hub_vnet_id = "" # = terraform -chdir=../hub-subscription output -raw hub_vnet_id
+
+# ---- Function デプロイ (run-from-package / 踏み台 VM から手動アップロード) ----
+# 稼働させる zip の blob 名 (踏み台 VM で deployments コンテナへアップロード済みの名前)。
+# デプロイのたびに更新して apply する。空なら WEBSITE_RUN_FROM_PACKAGE を設定しない。
+func_package_name = "" # 例: api-20260616.zip
+# 踏み台 VM 上でアップロードするユーザー/グループの Entra objectId (deployments への Blob Data Contributor)。
+uploader_principal_ids = [] # 例: ["00000000-0000-0000-0000-000000000000"]

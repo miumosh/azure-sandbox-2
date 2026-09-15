@@ -1,0 +1,56 @@
+# 方式A: 証明書は AppGW 側 (ssl_certificate: appgw-tls-cert) が KeyVault から直接ロード。
+# AGIC はその名前を appgw-ssl-certificate アノテーションで参照するだけ。spec.tls は不要。
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cert-check
+  labels:
+    app: cert-check
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cert-check
+  template:
+    metadata:
+      labels:
+        app: cert-check
+    spec:
+      containers:
+        - name: app
+          image: mcr.microsoft.com/azuredocs/aks-helloworld:v1
+          ports:
+            - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cert-check
+spec:
+  selector:
+    app: cert-check
+  ports:
+    - port: 80
+      targetPort: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: cert-check
+  annotations:
+    kubernetes.io/ingress.class: azure/application-gateway
+    # AppGW に載っている ssl_certificate の "名前" を参照 (= var.cert_secret_name)
+    appgw.ingress.kubernetes.io/appgw-ssl-certificate: appgw-tls-cert
+    appgw.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  rules:
+    - host: azure-app-service-cert-check.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: cert-check
+                port:
+                  number: 80

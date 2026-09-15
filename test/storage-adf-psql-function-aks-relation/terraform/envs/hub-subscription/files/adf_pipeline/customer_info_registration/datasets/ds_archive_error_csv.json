@@ -1,0 +1,17 @@
+{
+  "location": {
+    "type": "AzureBlobStorageLocation",
+    "container": "${archive_container}",
+    "folderPath": "archive/error",
+    "fileName": {
+      "value": "@concat(replace(pipeline().parameters.triggeredFileName, '.csv', ''), '_error_', convertFromUtc(utcNow(), 'Tokyo Standard Time', 'yyyyMMdd_HHmmss'), '.csv')",
+      "type": "Expression"
+    }
+  },
+  "encodingName": "utf-8",
+  "firstRowAsHeader": true,
+  "columnDelimiter": ",",
+  "rowDelimiter": "\n",
+  "quoteChar": "\"",
+  "escapeChar": "\\"
+}

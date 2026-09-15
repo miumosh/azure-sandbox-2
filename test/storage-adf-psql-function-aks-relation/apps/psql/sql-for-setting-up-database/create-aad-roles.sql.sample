@@ -1,0 +1,31 @@
+-- ============================================================================
+-- create-aad-roles.sql
+--
+-- ADF / Function / 踏み台 VM のマネージドID を PostgreSQL の AAD ロールとして作成する。
+--
+-- ★ 重要: 本スクリプトは **postgres データベース** に、**Entra ID 管理者**として
+--    AAD 認証で接続したセッションで実行すること。
+--    pgaadauth_* 関数は特別な postgres DB にのみ存在し、appdb 等では
+--    "function ... does not exist" になる。作成されたロールはクラスタ全体で
+--    共有されるため、その後 appdb での GRANT/所有権付与に使える。
+--
+--    接続例 (踏み台 VM 上、az login 済みの Entra 管理者):
+--      export PGPASSWORD=$(az account get-access-token \
+--        --resource-type oss-rdbms --query accessToken -o tsv)
+--      psql "host=<fqdn> port=5432 dbname=postgres user=<entra-admin-upn> sslmode=require" \
+--           -f create-aad-roles.sql
+--
+-- ★ object_id は名前解決(Graph)不要の _with_oid を使う (MI=サービスプリンシパルは
+--    Graph 権限が要るため)。<...OID> は terraform output で取得して置換する:
+--      ADF      : terraform -chdir=terraform/envs/hub-subscription  output -raw data_factory_principal_id
+--      Function : terraform -chdir=terraform/envs/spoke-subscription output -raw function_principal_id
+--      踏み台    : terraform -chdir=terraform/envs/hub-subscription  output -raw jumpbox_principal_id
+--
+--    ロール名は各 MI の表示名 (= リソース名) に一致させる (prefix に合わせて調整):
+--      ADF=<prefix>-adf  /  Function=<prefix>-func  /  踏み台=<prefix>-jumpbox
+-- ============================================================================
+
+-- 第3引数 'service' = マネージドID/サービスプリンシパル。第4: isAdmin, 第5: isMfa
+SELECT * FROM pgaadauth_create_principal_with_oid('ci00-adf',     '<ADF_OID>',  'service', false, false);
+SELECT * FROM pgaadauth_create_principal_with_oid('ci00-func',    '<FUNC_OID>', 'service', false, false);
+SELECT * FROM pgaadauth_create_principal_with_oid('ci00-jumpbox', '<JUMP_OID>', 'service', false, false);

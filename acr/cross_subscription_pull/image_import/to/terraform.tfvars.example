@@ -1,0 +1,17 @@
+# サブスクリプション B (import 先 ACR) -- 先に apply する
+subscription_id = "11111111-1111-1111-1111-111111111111"
+location        = "japaneast"
+
+# グローバル一意な ACR 名 (英数字 5-50 文字)
+acr_name = "acrimporttargetacrxxx"
+
+# import 実行 UAMI 名 (任意)
+runner_identity_name = "acr-import-runner"
+
+# --- ソース (A) 情報: from の apply 後に output を貼り付ける ---
+#   cd ../from && terraform output -raw source_acr_login_server
+#   cd ../from && terraform output -raw source_acr_id
+source_acr_login_server = "acrimportsourceacrxxx.azurecr.io"
+source_acr_id           = "/subscriptions/<A_SUB_ID>/resourceGroups/acr-import-a-rg/providers/Microsoft.ContainerRegistry/registries/acrimportsourceacrxxx"
+
+sample_image = "hello-world:latest"

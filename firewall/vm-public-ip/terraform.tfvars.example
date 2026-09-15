@@ -1,0 +1,18 @@
+subscription_id = "00000000-0000-0000-0000-000000000000"
+location        = "japaneast"
+
+# 外部から VM の Public IP へアクセスするクライアント
+# ここに載せた CIDR 宛の通信 (= インバウンドの戻り) だけが Firewall を迂回する
+inbound_clients = {
+  office = "203.0.113.10/32"
+}
+
+# Firewall を通さず VM の Public IP から直接出す宛先 (宛先A / 宛先B)
+direct_destinations = {
+  dest_a = "198.51.100.0/24"
+  dest_b = "192.0.2.50/32"
+}
+
+service_port           = 80
+allow_ssh_from_clients = false
+firewall_sku_tier      = "Standard"

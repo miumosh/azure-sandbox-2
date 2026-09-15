@@ -1,0 +1,18 @@
+# ============================================================================
+# AI Foundry env 用 tfvars サンプル (機微情報 / 環境固有値のみ)
+# cp terraform.tfvars.sample terraform.tfvars して値を埋める。
+# それ以外の構成値 (prefix / location / Storage 名 / DNS ゾーン等) は locals.tf。
+# ============================================================================
+
+# デプロイ先の Subscription ID
+subscription_id = "00000000-0000-0000-0000-000000000000" # 例: az account show --query id -o tsv
+
+# AI Services のネットワーク公開方式 (portal / restricted / private)。詳細は variables.tf。
+#   portal     : ポータルを使う。default_action = Allow のためネットワーク制限は実質なし
+#   restricted : 許可 IP のみ。API 利用は可能だがポータルは使用不可 (検証済み)
+#   private    : PE 専用。ポータルは VNet 内からのみ
+ai_services_network_mode = "portal"
+
+# restricted のときに許可するグローバル IP。
+# 現在の IP は curl -s https://ifconfig.me/ip などで確認する。回線により変動する点に注意。
+allowed_client_ips = [] # 例: ["203.0.113.10"]

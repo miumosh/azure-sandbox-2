@@ -1,0 +1,82 @@
+# ============================================================================
+# 本人特定 (id 取得) アプリ (FastAPI) の Deployment / Service
+#
+# ${IMAGE} / ${BASE_URL} / ${FUNCTIONS_KEY} は envsubst で置換して適用する:
+#   export IMAGE=... BASE_URL=... FUNCTIONS_KEY=...
+#   envsubst < k8s/deployment.yaml | kubectl apply -f -
+#
+# - AKS -> Function の認証は Function キー方式。Function キーは Secret に格納し、
+#   Pod には FUNCTIONS_KEY 環境変数として渡す (x-functions-key ヘッダに使用)。
+# - イメージ pull は kubelet の AcrPull(RBAC) で行うため imagePullSecret は不要。
+# ============================================================================
+apiVersion: v1
+kind: Secret
+metadata:
+  name: person-id-func-key
+type: Opaque
+stringData:
+  functions-key: "${FUNCTIONS_KEY}"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: person-id-app
+  labels:
+    app: person-id-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: person-id-app
+  template:
+    metadata:
+      labels:
+        app: person-id-app
+    spec:
+      containers:
+        - name: app
+          image: "${IMAGE}"
+          ports:
+            - containerPort: 8000
+          env:
+            - name: FUNCTIONS_BASE_URL
+              value: "${BASE_URL}"
+            - name: FUNCTIONS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: person-id-func-key
+                  key: functions-key
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: person-id-app
+  # 内部 LB にする場合は以下の注釈を付ける:
+  # annotations:
+  #   service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+spec:
+  type: LoadBalancer
+  selector:
+    app: person-id-app
+  ports:
+    - port: 80
+      targetPort: 8000

@@ -1,0 +1,27 @@
+# ============================================================================
+# terraform.tfvars.sample -> terraform.tfvars にコピーして使用する
+# 環境固有値のみ。命名 / タグ等の構成値は locals.tf を参照。
+# ============================================================================
+
+# 診断設定を行うサブスクリプション
+subscription_id = "00000000-0000-0000-0000-000000000000" # az account show --query id -o tsv
+
+# 宛先 Log Analytics ワークスペースのリージョン
+# location = "japaneast"
+
+# ---- 有効化する Activity Log カテゴリ -------------------------------------
+# 既定は下記 4 つ。全カテゴリを試すなら Alert / Recommendation / Policy /
+# Autoscale を追加する。指定可能な値は variables.tf の一覧を参照。
+# activity_log_categories = [
+#   "Administrative",
+#   "Security",
+#   "ServiceHealth",
+#   "ResourceHealth",
+# ]
+
+# ---- コスト面のツマミ -----------------------------------------------------
+# 保持日数 (30〜730)。30 日までは追加課金なし。
+# log_analytics_retention_in_days = 30
+
+# 1 日あたりの取り込み上限 (GB)。-1 で無制限。
+# log_analytics_daily_quota_gb = 1

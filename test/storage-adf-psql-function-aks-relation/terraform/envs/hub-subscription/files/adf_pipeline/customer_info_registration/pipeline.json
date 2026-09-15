@@ -1,0 +1,91 @@
+[
+  {
+    "name": "InputCSV",
+    "type": "Copy",
+    "policy": { "timeout": "0.00:30:00", "retry": 1, "retryIntervalInSeconds": 30 },
+    "typeProperties": {
+      "source": {
+        "type": "DelimitedTextSource",
+        "storeSettings": {
+          "type": "AzureBlobStorageReadSettings",
+          "recursive": false,
+          "enablePartitionDiscovery": false
+        },
+        "formatSettings": { "type": "DelimitedTextReadSettings", "compressionProperties": { "Type": "", "Values": null } }
+      },
+      "sink": {
+        "type": "AzurePostgreSqlSink",
+        "preCopyScript": "TRUNCATE TABLE customer_info_landing;",
+        "writeBatchSize": 10000
+      },
+      "enableStaging": false,
+      "translator": {
+        "type": "TabularTranslator",
+        "mappings": [
+          { "source": { "name": "顧客_番号" }, "sink": { "name": "policy_no", "type": "String" } },
+          { "source": { "name": "顧客_氏名" }, "sink": { "name": "name_kana", "type": "String" } },
+          { "source": { "name": "顧客_生年月日" }, "sink": { "name": "birth_ymd", "type": "String" } },
+          { "source": { "name": "顧客_電話番号" }, "sink": { "name": "cellular_phone_no", "type": "String" } }
+        ]
+      }
+    },
+    "inputs":  [ { "referenceName": "ds_src_csv", "type": "DatasetReference" } ],
+    "outputs": [ { "referenceName": "ds_customer_info_landing", "type": "DatasetReference" } ]
+  },
+  {
+    "name": "ValidateData",
+    "type": "Script",
+    "dependsOn": [ { "activity": "InputCSV", "dependencyConditions": ["Succeeded"] } ],
+    "policy": { "timeout": "0.00:30:00", "retry": 1, "retryIntervalInSeconds": 30 },
+    "linkedServiceName": { "referenceName": "ls_psql", "type": "LinkedServiceReference" },
+    "typeProperties": {
+      "scripts": [ { "type": "NonQuery", "text": "@{pipeline().parameters.validation_sql}" } ]
+    }
+  },
+  {
+    "name": "ArchiveSuccess",
+    "type": "Copy",
+    "dependsOn": [ { "activity": "ValidateData", "dependencyConditions": ["Succeeded"] } ],
+    "policy": { "timeout": "0.00:30:00", "retry": 1, "retryIntervalInSeconds": 30 },
+    "typeProperties": {
+      "source": {
+        "type": "AzurePostgreSqlSource",
+        "query": "SELECT policy_no, name_kana, birth_ymd, cellular_phone_no FROM customer_info_production;"
+      },
+      "sink": {
+        "type": "DelimitedTextSink",
+        "storeSettings": { "type": "AzureBlobStorageWriteSettings" },
+        "formatSettings": {
+          "type": "DelimitedTextWriteSettings",
+          "quoteAllText": true,
+          "fileExtension": ".csv"
+        }
+      }
+    },
+    "inputs":  [ { "referenceName": "ds_customer_info_production", "type": "DatasetReference" } ],
+    "outputs": [ { "referenceName": "ds_archive_success_csv",      "type": "DatasetReference" } ]
+  },
+  {
+    "name": "ArchiveError",
+    "type": "Copy",
+    "dependsOn": [ { "activity": "ValidateData", "dependencyConditions": ["Succeeded"] } ],
+    "policy": { "timeout": "0.00:30:00", "retry": 1, "retryIntervalInSeconds": 30 },
+    "typeProperties": {
+      "source": {
+        "type": "AzurePostgreSqlSource",
+        "query": "SELECT policy_no, name_kana, birth_ymd, cellular_phone_no, error_message FROM customer_info_error;"
+      },
+      "sink": {
+        "type": "DelimitedTextSink",
+        "storeSettings": { "type": "AzureBlobStorageWriteSettings" },
+        "formatSettings": {
+          "type": "DelimitedTextWriteSettings",
+          "quoteAllText": true,
+          "fileExtension": ".csv"
+        }
+      }
+    },
+    "inputs":  [ { "referenceName": "ds_customer_info_error", "type": "DatasetReference" } ],
+    "outputs": [ { "referenceName": "ds_archive_error_csv",   "type": "DatasetReference" } ]
+  }
+]

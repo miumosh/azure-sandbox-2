@@ -1,0 +1,32 @@
+# サブスクリプション B (Pull する側 / 取り込み先 ACR) -- from の後に apply する
+subscription_id        = "11111111-1111-1111-1111-111111111111"
+source_subscription_id = "00000000-0000-0000-0000-000000000000" # サブスク A
+location               = "japaneast"
+
+# グローバル一意な ACR 名 (英数字 5-50 文字)
+acr_name = "crosssubtargetacrxxx"
+
+# Runner UAMI 名 (任意)
+runner_identity_name = "acr-pull-runner"
+
+# B 側ネットワーク (A 側 10.10.0.0/16 と重複しないこと)
+vnet_address_space = ["10.20.0.0/16"]
+pe_subnet_prefix   = ["10.20.1.0/24"]
+vm_subnet_prefix   = ["10.20.2.0/24"]
+
+# Runner VM
+vm_size           = "Standard_B2ms"
+vm_admin_username = "azureuser"
+vm_admin_password = "ChangeMe-Str0ng-P@ssw0rd!"
+allowed_ssh_cidr  = "x.x.x.x/32" # 自分のグローバル IP
+
+# --- ソース (A) 情報: from の apply 後に output を貼り付ける ---
+#   cd ../from && terraform output
+source_acr_login_server = "crosssubsourceacrxxx.azurecr.io"
+source_acr_id           = "/subscriptions/<A_SUB_ID>/resourceGroups/cross-sub-pull-a-rg/providers/Microsoft.ContainerRegistry/registries/crosssubsourceacrxxx"
+source_rg_name          = "cross-sub-pull-a-rg"
+source_vnet_id          = "/subscriptions/<A_SUB_ID>/resourceGroups/cross-sub-pull-a-rg/providers/Microsoft.Network/virtualNetworks/cross-sub-pull-a-vnet"
+source_vnet_name        = "cross-sub-pull-a-vnet"
+source_dns_zone_id      = "/subscriptions/<A_SUB_ID>/resourceGroups/cross-sub-pull-a-rg/providers/Microsoft.Network/privateDnsZones/privatelink.azurecr.io"
+
+sample_image = "hello-world:latest"

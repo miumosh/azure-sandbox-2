@@ -1,0 +1,14 @@
+# ---- 基盤 ----
+subscription_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" # az account show --query id -o tsv
+location        = "japaneast"
+
+# ---- cert/ の output を渡す ----
+cert_kv_name     = "kv-appgwcert-xxxx"  # terraform -chdir=../cert output -raw key_vault_name
+cert_kv_rg       = "rg-appgw-cert-test" # terraform -chdir=../cert output -raw key_vault_resource_group
+cert_secret_name = "appgw-tls-cert"
+
+# ---- 公開検証用 DNS (既定値のままで OK) ----
+# 方式A と衝突させないため、証明書の www 側 SAN を使う
+# dns_zone_name                = "example.com"
+# dns_zone_resource_group_name = "rg-dns"
+# dns_record_name              = "www.azure-app-service-cert-check"

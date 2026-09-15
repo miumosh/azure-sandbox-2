@@ -1,0 +1,36 @@
+# AGIC (ingress-azure) Helm values — 方式A
+#
+# チャートは MCR の OCI レジストリから取得する。
+# 旧来の Helm リポジトリ https://appgwingress.blob.core.windows.net/ingress-azure-helm-package/ は
+# 公開停止済み (helm repo add が 409 "Public access is not permitted on this storage account")。
+#
+#   helm install agic \
+#     oci://mcr.microsoft.com/azure-application-gateway/charts/ingress-azure \
+#     --version 1.9.11 \
+#     --namespace kube-system \
+#     --set appgw.subscriptionId=$(terraform output -raw subscription_id) \
+#     --set armAuth.identityClientID=$(terraform output -raw agic_identity_client_id) \
+#     -f k8s/agic-values.yaml
+#
+# ※ release 名は "agic" 固定。identity.tf の federated credential の subject が
+#    system:serviceaccount:kube-system:agic-sa-ingress-azure に依存している。
+verbosityLevel: 3
+
+appgw:
+  subscriptionId: "" # --set で上書き
+  resourceGroup: "certdirect-rg"
+  name: "certdirect-appgw"
+  # 公開検証: public frontend にリスナーを張る。
+  # true にすると AppGW の private frontend を探しに行くが、本構成は public のみのため
+  # AGIC がリスナーを作れず Ingress が反映されない。
+  usePrivateIP: false
+
+armAuth:
+  type: workloadIdentity
+  identityClientID: "" # --set で上書き
+
+rbac:
+  enabled: true
+
+kubernetes:
+  ingressClass: azure/application-gateway

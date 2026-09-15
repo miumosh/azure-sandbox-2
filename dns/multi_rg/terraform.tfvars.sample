@@ -1,0 +1,18 @@
+# terraform.tfvars.sample -> terraform.tfvars にコピーして使用する
+subscription_id = "00000000-0000-0000-0000-000000000000"
+
+# location = "japaneast"
+
+# VM に SSH したい場合のみ、自分のグローバル IP を指定する。
+# 名前解決の確認は az vm run-command 経由でできるため通常は不要。
+# allowed_client_ips = ["203.0.113.10"]
+
+# VNet3 (VM 側) にリンクする Private DNS ゾーンの切り替え。
+#   rg1 / rg2 / both / none
+# "both" は同名ゾーンの二重リンクを試すモードで、apply が失敗するのが期待値。
+vm_vnet_dns_link = "rg1"
+
+# 両ゾーンに同名 / 別 IP の A レコードを作るか。
+# false にするとレコード名の重複が無い状態になり、その場合でも同名ゾーンの
+# 二重リンクが拒否されること (判定がゾーン名前空間単位であること) を確認できる。
+# create_conflict_records = true

@@ -1,0 +1,11 @@
+# ============================================================================
+# check-psql-private-option env 用 tfvars サンプル
+# cp terraform.tfvars.sample terraform.tfvars して値を埋める。
+# ============================================================================
+
+subscription_id     = "00000000-0000-0000-0000-000000000000"
+psql_admin_password = "Replace-With-Strong-Password-#1"
+
+# ADF Managed Private Endpoint / PostgreSQL Linked Service を作成するか。
+# まず VNet 統合 PostgreSQL + ManagedVNet ADF の土台だけ立てたい場合は false。
+enable_adf_mpe = true

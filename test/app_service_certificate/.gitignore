@@ -1,0 +1,11 @@
+# Terraform (このディレクトリ配下の全 tf ディレクトリに適用)
+*.tfstate
+*.tfstate.*
+*.tfplan
+*.tfvars
+.terraform/
+.terraform.lock.hcl
+
+# .example / .sample のテンプレートは追跡対象に残す
+!*.tfvars.example
+!*.tfvars.sample

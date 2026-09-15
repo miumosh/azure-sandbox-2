@@ -1,0 +1,27 @@
+# ============================================================================
+# Hub env 用 tfvars サンプル (機微情報 / 環境固有値 / cross-sub 参照のみ)
+# cp terraform.tfvars.sample terraform.tfvars して値を埋める。
+# それ以外の構成値 (prefix / location / 各リソース名 / サブネット等) は locals.tf。
+# ============================================================================
+
+subscription_id = "00000000-0000-0000-0000-000000000000" # ci00-hub-subscription
+
+# Storage Explorer からアップロードする端末のグローバル IP
+# 注意: Storage の network_rules は単一 IP を /32 付きで受け付けない。
+#       単一 IP は裸で指定すること（例: "203.0.113.10"。"203.0.113.10/32" は不可）。
+#       範囲で指定する場合は /0〜/30 の CIDR（/31, /32 は不可）。
+allowed_upload_ip = "203.0.113.10"
+
+# ACR の public network access。push 時のみ true にして閉域へ戻す運用。
+acr_public_network_access_enabled = false
+
+# 踏み台 VM (Bastion 経由で psql を実行する) の管理者パスワード
+jumpbox_admin_password = "Replace-With-Strong-Password-#1"
+
+# ---- Spoke 側 output を貼り付ける (spoke を先に apply してから設定) --------
+# 初回は空のままで Hub を apply し、その後 Spoke -> Hub の順で値を反映する。
+# envs/spoke-subscription の `terraform output` から取得する。
+spoke_vnet_id         = "" # = terraform -chdir=../spoke-subscription output -raw spoke_vnet_id
+psql_server_id        = "" # = ... output -raw psql_server_id
+psql_fqdn             = "" # = ... output -raw psql_fqdn
+aks_kubelet_object_id = "" # = ... output -raw aks_kubelet_object_id (ACR の AcrPull 用)

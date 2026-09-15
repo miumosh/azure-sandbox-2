@@ -1,0 +1,32 @@
+# ============================================================================
+# ai/ais ローカル除外
+# ----------------------------------------------------------------------------
+# リポジトリルートの .gitignore でも除外されるが、この検証環境は
+# 実サブスクリプション ID・Storage の SAS・SSH 秘密鍵が state / tfvars に載るため、
+# ディレクトリ単体で切り出しても漏れないよう明示的に重ねて指定する。
+# ============================================================================
+
+# 実際の値を埋めた tfvars (subscription_id 等)。sample のみ追跡する
+terraform.tfvars
+*.auto.tfvars
+!terraform.tfvars.sample
+!*.tfvars.example
+
+# state。Storage の SAS / アクセスキー / Cognitive のアクセスキーが平文で載る
+*.tfstate
+*.tfstate.*
+.terraform.tfstate.lock.info
+
+# プロバイダ / モジュールのローカルキャッシュ
+.terraform/
+# ロックファイルはバージョン固定のためコミットする
+!.terraform.lock.hcl
+
+# Terraform が生成した SSH 秘密鍵
+generated/
+
+# plan 出力 / クラッシュログ
+*.tfplan
+tf.plan
+crash.log
+crash.*.log

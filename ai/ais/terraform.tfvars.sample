@@ -1,0 +1,61 @@
+# ============================================================================
+# ai/ais 用 tfvars サンプル (機微情報 / 環境固有値 / 検証スイッチのみ)
+# cp terraform.tfvars.sample terraform.tfvars して値を埋める。
+# それ以外の構成値 (prefix / VNet / DNS ゾーン / アカウント名等) は locals.tf。
+#
+# terraform.tfvars はリポジトリルートの .gitignore で除外され、*.sample のみ追跡する。
+# ============================================================================
+
+# デプロイ先の Subscription ID (必須)
+subscription_id = "00000000-0000-0000-0000-000000000000" # 例: az account show --query id -o tsv
+
+# 全リソースのリージョン
+# location = "japaneast"
+
+# ---- 検証の主役スイッチ -----------------------------------------------------
+# AI サービス 3 アカウントの公開方式。
+#   private    : public 無効 + PE のみ (既定・今回の検証本命)
+#   portal     : public 有効 + default_action = Allow。ポータルが使える唯一のモード
+#   restricted : public 有効 + Deny + allowed_client_ips のみ許可。ポータルは使用不可
+ai_network_mode = "private"
+
+# restricted のときに許可するグローバル IP (裸 IP または CIDR)。
+# private のときは networkAcls 自体を作らないため無視される。
+# 現在の IP: curl -s https://ifconfig.me/ip
+allowed_client_ips = [] # 例: ["203.0.113.10"]
+
+# ---- AI Foundry Hub (v1) ---------------------------------------------------
+# Hub + バックエンド Storage / Key Vault を作るか。
+# Storage との紐づけ / Key Vault の Secret 挙動を検証しないなら false でよい。
+enable_foundry_hub = true
+
+# Hub のバックエンド Storage / Key Vault も閉域化するか。
+#   true  : Storage / Key Vault とも public 無効 + PE。Hub は managed VNet 有効化
+#   false : Storage / Key Vault は public のまま (PE は併存)
+hub_dependencies_private = true
+
+# ---- 検証用 VM -------------------------------------------------------------
+# VNet 内から名前解決 / 疎通を確認する Linux VM。閉域の検証には実質必須。
+# 確認は SSH ではなく az vm run-command で行う (verify.sh)。
+enable_jumpbox = true
+
+# AI Foundry ポータルをブラウザで手動確認する場合のみ true。
+# Bastion は起動中つねに課金されるため、確認が終わったら false に戻して apply すること。
+enable_bastion = false
+
+# enable_bastion = true のとき必須。12 文字以上・大小英数記号のうち 3 種類以上。
+# windows_jumpbox_admin_password = "ChangeMe-Passw0rd!"
+
+# jumpbox_admin_username = "azureuser"
+
+# ---- Foundry v2 virtual network injection ----------------------------------
+# v2 の「送信」側閉域化 (あなたの VNet のサブネットに Agent コンテナを注入) を
+# 検証するための専用アカウント (aisinj-*) を作るか。
+# network_injection はアカウント作成時にしか設定できないため別アカウントになる。
+# snet-agent (Microsoft.App/environments 委任 /24) も使う。詳細は docs/08-v1-vs-v2.md。
+enable_vnet_injection = true
+
+# ---- モデルデプロイ --------------------------------------------------------
+# OpenAI アカウントへの gpt-4o-mini デプロイ。閉域経路で実際に推論できるかの確認に使う。
+# クォータ不足で apply が落ちる場合は false にする。
+enable_model_deployment = true

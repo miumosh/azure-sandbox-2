@@ -1,0 +1,25 @@
+# ===== 共通 =====
+subscription_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+key_vault_name  = "kv-appgwcert-xxxx" # グローバル一意
+common_name     = "azure-app-service-cert-check.example.com"
+
+# ===== モード切替 =====
+# 配管確認 (無料・即時):
+cert_source = "self_signed"
+
+# 本番 (有料・DNS 検証要) にする場合は上を下記に変更し、2 つの RP object id を設定:
+# cert_source = "app_service_order"
+#
+#   # 先に RP を登録しないと SP がテナントに生えず、object id を取得できない
+#   az provider register -n Microsoft.CertificateRegistration --wait
+#
+#   # ★KV に PFX を書き込む主体 (必須)。App Service RP と取り違えないこと
+#   az ad sp show --id f3c21649-0979-4721-ac85-b0216b2cf413 --query id -o tsv
+# certificate_registration_rp_object_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+#
+#   # ポータル作成時と同じ状態に揃えるため (任意)
+#   az ad sp show --id abfa0a7c-a6b6-4736-8310-5855508787cd --query id -o tsv
+# appservice_rp_object_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+#
+# dns_zone_name / dns_zone_resource_group_name はデフォルト (example.com / rg-dns) のままでOK
+# dns_verification_record_name も "@" 固定でよい (ルートドメインに TXT を置くのが必須仕様)

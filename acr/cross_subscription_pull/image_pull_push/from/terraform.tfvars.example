@@ -1,0 +1,10 @@
+# サブスクリプション A (Pull される側 / ソース ACR) -- 先に apply する
+subscription_id = "00000000-0000-0000-0000-000000000000"
+location        = "japaneast"
+
+# グローバル一意な ACR 名 (英数字 5-50 文字)
+acr_name = "crosssubsourceacrxxx"
+
+# VNet アドレス空間 (B 側 10.20.0.0/16 と重複しないこと)
+vnet_address_space = ["10.10.0.0/16"]
+pe_subnet_prefix   = ["10.10.1.0/24"]

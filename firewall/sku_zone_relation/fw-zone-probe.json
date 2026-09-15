@@ -1,0 +1,69 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "zones": { "type": "array" },
+    "tier":  { "type": "string", "defaultValue": "Premium" },
+    "prefix":{ "type": "string", "defaultValue": "zprobe" }
+  },
+  "variables": {
+    "loc": "japaneast",
+    "vnet": "[concat(parameters('prefix'),'-vnet')]",
+    "pip":  "[concat(parameters('prefix'),'-pip')]",
+    "pol":  "[concat(parameters('prefix'),'-pol')]",
+    "fw":   "[concat(parameters('prefix'),'-afw')]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Network/virtualNetworks",
+      "apiVersion": "2023-09-01",
+      "name": "[variables('vnet')]",
+      "location": "[variables('loc')]",
+      "properties": {
+        "addressSpace": { "addressPrefixes": ["10.199.0.0/16"] },
+        "subnets": [ { "name": "AzureFirewallSubnet", "properties": { "addressPrefix": "10.199.0.0/26" } } ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/publicIPAddresses",
+      "apiVersion": "2023-09-01",
+      "name": "[variables('pip')]",
+      "location": "[variables('loc')]",
+      "sku": { "name": "Standard", "tier": "Regional" },
+      "zones": "[parameters('zones')]",
+      "properties": { "publicIPAllocationMethod": "Static", "publicIPAddressVersion": "IPv4" }
+    },
+    {
+      "type": "Microsoft.Network/firewallPolicies",
+      "apiVersion": "2023-09-01",
+      "name": "[variables('pol')]",
+      "location": "[variables('loc')]",
+      "properties": { "sku": { "tier": "[parameters('tier')]" } }
+    },
+    {
+      "type": "Microsoft.Network/azureFirewalls",
+      "apiVersion": "2023-09-01",
+      "name": "[variables('fw')]",
+      "location": "[variables('loc')]",
+      "zones": "[parameters('zones')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', variables('vnet'))]",
+        "[resourceId('Microsoft.Network/publicIPAddresses', variables('pip'))]",
+        "[resourceId('Microsoft.Network/firewallPolicies', variables('pol'))]"
+      ],
+      "properties": {
+        "sku": { "name": "AZFW_VNet", "tier": "[parameters('tier')]" },
+        "firewallPolicy": { "id": "[resourceId('Microsoft.Network/firewallPolicies', variables('pol'))]" },
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "subnet": { "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnet'), 'AzureFirewallSubnet')]" },
+              "publicIPAddress": { "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('pip'))]" }
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,76 @@
+# 方式B: CSI が同期した K8s TLS Secret を spec.tls.secretName で参照。
+# AGIC がその Secret を読み、AppGW に証明書をアップロードする。
+# ※ Deployment が CSI ボリュームをマウントしないと Secret が生成されない点に注意。
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cert-check
+  labels:
+    app: cert-check
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cert-check
+  template:
+    metadata:
+      labels:
+        app: cert-check
+    spec:
+      containers:
+        - name: app
+          image: mcr.microsoft.com/azuredocs/aks-helloworld:v1
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: secrets-store
+              mountPath: /mnt/secrets-store
+              readOnly: true
+      volumes:
+        # ↓ このマウントが SecretProviderClass の secretObjects 同期をトリガーする
+        - name: secrets-store
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: appgw-tls-spc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cert-check
+spec:
+  selector:
+    app: cert-check
+  ports:
+    - port: 80
+      targetPort: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: cert-check
+  annotations:
+    kubernetes.io/ingress.class: azure/application-gateway
+    appgw.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  # host は証明書の "www 側 SAN" を使う。
+  # 方式A (assign-appgw-direct) が azure-app-service-cert-check.example.com を
+  # 使っているため、同じ証明書のまま衝突を避けてこちらを使う。
+  #   SAN: DNS:azure-app-service-cert-check.example.com      ← 方式A
+  #        DNS:www.azure-app-service-cert-check.example.com  ← 方式B (ここ)
+  tls:
+    - hosts:
+        - www.azure-app-service-cert-check.example.com
+      secretName: appgw-tls-cert # CSI が生成した K8s Secret
+  rules:
+    - host: www.azure-app-service-cert-check.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: cert-check
+                port:
+                  number: 80

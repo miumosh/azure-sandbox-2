@@ -1,0 +1,12 @@
+# terraform.tfvars.sample -> terraform.tfvars にコピーして使用する
+subscription_id = "00000000-0000-0000-0000-000000000000"
+
+# Availability Zone 対応リージョンであること (japaneast / eastus など)
+# location = "japaneast"
+
+# 検証の主スイッチ。まず ["1"] (単一ゾーン) で apply し、
+# そのあと ["1", "2"] に変えて plan が replace になることを確認する。
+#
+# ゾーン数 <= ノード数 (primary 1 + replica 1 = 2) の制約があるため、
+# 既定構成で指定できるゾーンは最大 2 つ。
+redis_zones = ["1"]

@@ -1,0 +1,20 @@
+# terraform.tfvars.sample -> terraform.tfvars にコピーして使用する
+#
+# ★ 事前に、このサブスクリプションで Azure Cache for Redis を作成できるか確認すること。
+#      ../check-history.sh        過去の作成履歴 (読み取り専用)
+#      ../check-eligibility.sh    作成可否の確定判定
+#    詳細は ../creation-eligibility.md を参照。
+subscription_id = "00000000-0000-0000-0000-000000000000"
+
+# Availability Zone 対応リージョンであること
+# location = "japaneast"
+
+# 配置する単一の Availability Zone ("1" / "2" / "3")
+# ★ 変更すると破棄 -> 再作成になる (../doc/recreation-impact.md)
+# zone = "1"
+
+# リソース名の接頭辞
+# name_prefix = "redissaz"
+
+# Premium の容量 (1=P1 が最小かつ最安)
+# capacity = 1

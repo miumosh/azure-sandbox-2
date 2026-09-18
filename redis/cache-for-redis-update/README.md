@@ -189,4 +189,5 @@ Update API のリクエストボディ型 `RedisUpdateParameters` に `zones` �
 | `check-history.sh` | 組織で過去に作成した履歴があるかを調査 (読み取り専用) |
 | `create-redis-single-az/` | **作成可能な別環境用**: Premium / 単一 AZ を作る最小構成 |
 | `doc/recreation-impact.md` | **再作成 (replace) が発生したときの影響範囲** |
+| `doc/official-docs-zone-redundancy.md` | 公式ドキュメント2本の再確認・裏取り結果(in-place 対応の範囲) |
 | `.gitignore` | このディレクトリ単体でも `terraform.tfvars` を除外する |

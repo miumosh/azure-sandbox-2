@@ -1,0 +1,28 @@
+# ============================================================================
+# このディレクトリ専用の .gitignore
+# 機微情報 (SAS / サブスクリプション ID / state) を絶対に commit しないこと。
+# ============================================================================
+
+# ---- 機微情報 --------------------------------------------------------------
+terraform.tfvars
+*.auto.tfvars
+*.tfvars.json
+
+# ---- Terraform 作業ファイル ------------------------------------------------
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+tfplan
+tfplan.*
+*.tfplan
+.terraform.tfstate.lock.info
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# ---- 検証結果 (SAS トークン等が混入しうるため出力物は追跡しない) -----------
+results/
+images/

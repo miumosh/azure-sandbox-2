@@ -8,6 +8,12 @@
 **「単一ゾーン -> 自分で指定した複数ゾーン」への無停止変更は、どの経路でも不可能。**
 in-place で変えられるのは **「-> Azure が自動で選んだゾーン冗長構成 (`zonalAllocationPolicy = Automatic`)」だけ**。
 
+> **裏取り済み (2026-09-16)**: 公式ドキュメントに
+> 「Updating an existing Standard or Premium cache to use zone redundancy is supported in-place.」
+> と明記されているが、これは Automatic への片道移行を指すものであり、上記の結論とは矛盾しない。
+> `UserDefined`(ゾーン番号の明示指定)への in-place 更新は同じ文書内で明確に
+> 「isn't supported」とされている。引用と詳細は [doc/official-docs-zone-redundancy.md](./doc/official-docs-zone-redundancy.md) を参照。
+
 | 経路 | in-place 変更 | ゾーンを明示指定できるか | 備考 |
 |------|:---:|:---:|------|
 | Terraform (`azurerm_redis_cache.zones`) | ✗ replace | ✓ 作成時のみ | `zones` は ForceNew |

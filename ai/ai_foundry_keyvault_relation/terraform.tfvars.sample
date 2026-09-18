@@ -1,0 +1,38 @@
+# ============================================================================
+# Key Vault 閉域化影響検証 用 tfvars サンプル (機微情報 / 環境固有値のみ)
+# cp terraform.tfvars.sample terraform.tfvars して値を埋める。
+# それ以外の構成値 (prefix / location / リソース名 / DNS ゾーン等) は locals.tf。
+#
+# terraform.tfvars はこのディレクトリの .gitignore で除外している (commit しないこと)。
+# ============================================================================
+
+# デプロイ先の Subscription ID
+subscription_id = "00000000-0000-0000-0000-000000000000" # 例: az account show --query id -o tsv
+
+# ---- 本検証の主スイッチ ----------------------------------------------------
+# Key Vault の公開方式。詳細は variables.tf。
+#   public     : ベースライン (閉域化前)。public 有効 + default_action = Allow
+#   restricted : public 有効 + Deny + bypass = AzureServices + 許可 IP (+ PE)
+#   private    : public 無効 (PE のみ)。networkAcls は評価されない
+#
+# この値だけを付け替えて apply し直し、scripts/verify.sh で影響を比較する。
+key_vault_network_mode = "public"
+
+# restricted のときに許可する運用端末のグローバル IP。
+# 現在の IP は curl -s https://ifconfig.me/ip などで確認する。回線により変動する点に注意。
+allowed_client_ips = [] # 例: ["203.0.113.10"]
+
+# ---- 前提条件の固定 --------------------------------------------------------
+# AI Foundry Hub の公開状態。前提は「インバウンドのみ閉域化」なので Disabled。
+# ポータルから手動確認したい場合のみ一時的に "Enabled" にする。
+ai_foundry_public_network_access = "Disabled"
+
+# 検証者自身に Key Vault Administrator を付与するか (シークレット確認用)。
+grant_operator_key_vault_role = true
+
+# Key Vault の networkAcls.bypass に "AzureServices" を設定するか (false で "None")。
+# 本検証の結論上もっとも重要なスイッチ。
+#   true  : 信頼された Azure サービス (Azure Machine Learning を含む) がファイアウォールを迂回できる
+#           => public 無効にしても AI Foundry の SAS 接続は維持される
+#   false : 迂回を許さない => AI Foundry から Key Vault のシークレットが解決できなくなる
+key_vault_trusted_azure_services_bypass = true

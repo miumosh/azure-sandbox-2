@@ -1,0 +1,14 @@
+{
+  "location": {
+    "type": "AzureBlobStorageLocation",
+    "container": "${upload_container}",
+    "folderPath": "input",
+    "fileName": "@{pipeline().parameters.triggeredFileName}"
+  },
+  "encodingName": "UTF-8",
+  "firstRowAsHeader": true,
+  "columnDelimiter": ",",
+  "rowDelimiter": "\r\n",
+  "quoteChar": "\"",
+  "escapeChar": "\\"
+}

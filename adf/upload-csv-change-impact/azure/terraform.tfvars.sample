@@ -1,0 +1,15 @@
+# ============================================================================
+# cp terraform.tfvars.sample terraform.tfvars して値を埋める。
+# ============================================================================
+
+subscription_id = "00000000-0000-0000-0000-000000000000"
+
+# 作業端末のグローバル IP (curl -s https://ifconfig.me で確認)。
+# Storage の network_rules は /32 付きを受け付けないため裸 IP で指定する。
+allowed_ip = "203.0.113.10"
+
+psql_admin_password = "Replace-With-Strong-Password-#1"
+
+# ds_src_csv の定義。after = 変更後 (UTF-8 / CRLF)、before = 変更前 (shift_jis / LF)。
+# before に切り替えて apply すれば、同じ ADF で変更前の挙動も実測できる。
+src_csv_dataset = "after"

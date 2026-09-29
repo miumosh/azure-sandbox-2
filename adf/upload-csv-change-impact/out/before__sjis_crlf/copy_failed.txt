@@ -1,0 +1,1 @@
+source column '顧客_電話番号' not found in header ['顧客_番号', '顧客_氏名', '顧客_生年月日', '顧客_電話番号\r']

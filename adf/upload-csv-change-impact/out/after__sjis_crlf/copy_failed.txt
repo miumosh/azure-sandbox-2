@@ -1,0 +1,1 @@
+source column '顧客_番号' not found in header ['�ڋq_�ԍ�', '�ڋq_����', '�ڋq_���N����', '�ڋq_�d�b�ԍ�']

@@ -1,0 +1,12 @@
+# 検証用のローカル PostgreSQL (Azure Database for PostgreSQL Flexible Server の代替)
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: appdb
+      POSTGRES_INITDB_ARGS: --encoding=UTF8
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres", "-d", "appdb"]
+      interval: 2s
+      retries: 30

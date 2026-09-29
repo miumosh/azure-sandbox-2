@@ -1,0 +1,16 @@
+# 実値を書いた tfvars。sample はテンプレートなので追跡する
+terraform.tfvars
+!terraform.tfvars.sample
+
+.terraform/
+!.terraform.lock.hcl
+*.tfstate
+*.tfstate.*
+.terraform.tfstate.lock.info
+
+# apply / 実行ログ (サブスクリプション ID・リソース ID を含む)
+*.log
+out-azure/*/activity_runs.json
+
+# Python キャッシュ
+__pycache__/

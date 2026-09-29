@@ -1,0 +1,2 @@
+InputCSV: ErrorCode=MappingColumnNameNotFoundInSourceFile,'Type=Microsoft.DataTransfer.Common.Shared.HybridDeliveryException,Message=Column '顧客_番号' specified in column mapping cannot be found in 'sjis_crlf.csv' source file.,Source=Microsoft.DataTransfer.ClientLibrary,'
+InputCSV: ErrorCode=MappingColumnNameNotFoundInSourceFile,'Type=Microsoft.DataTransfer.Common.Shared.HybridDeliveryException,Message=Column '顧客_番号' specified in column mapping cannot be found in 'sjis_crlf.csv' source file.,Source=Microsoft.DataTransfer.ClientLibrary,'

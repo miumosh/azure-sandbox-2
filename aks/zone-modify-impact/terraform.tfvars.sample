@@ -1,0 +1,9 @@
+# terraform.tfvars.sample -> terraform.tfvars にコピーして使用する
+subscription_id = "00000000-0000-0000-0000-000000000000"
+
+# Availability Zone 対応リージョンであること
+# location = "japaneast"
+
+# 検証の主スイッチ。まず初期状態で apply し、そのあと plan-zones.sh で変更後を plan する。
+system_zones = ["1", "2"]
+user_zones   = null

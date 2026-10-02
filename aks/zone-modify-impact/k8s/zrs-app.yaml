@@ -1,0 +1,74 @@
+# ============================================================================
+# ZRS ディスク (Premium_ZRS) を使う検証用ワークロード
+# - user プールに 1 Pod を置き、1 秒ごとに時刻とノード名を PV に追記し続ける。
+# - ゾーン変更 (rotation) の前後で
+#     * データが残っているか (marker と log の先頭行)
+#     * 書き込みが何秒止まったか (log の時刻の飛び)
+#     * どのノード / ゾーンに移ったか
+#   を check-zrs.sh で確認する。
+# ============================================================================
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: zrs-premium
+provisioner: disk.csi.azure.com
+parameters:
+  skuName: Premium_ZRS
+reclaimPolicy: Delete
+volumeBindingMode: WaitForFirstConsumer
+allowVolumeExpansion: true
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: zrs-data
+spec:
+  accessModes: ["ReadWriteOnce"]
+  storageClassName: zrs-premium
+  resources:
+    requests:
+      storage: 4Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zrs-writer
+spec:
+  replicas: 1
+  # RWO ディスクなので新旧 Pod が同時に掴めない。Recreate で 1 つずつ。
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: zrs-writer
+  template:
+    metadata:
+      labels:
+        app: zrs-writer
+    spec:
+      nodeSelector:
+        workload: zrs-test
+      containers:
+        - name: writer
+          image: mcr.microsoft.com/cbl-mariner/busybox:2.0
+          env:
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              [ -f /data/marker ] || echo "created $(date -u +%FT%TZ) on $NODE_NAME" > /data/marker
+              echo "$(date -u +%s) start $NODE_NAME" >> /data/log
+              while true; do
+                echo "$(date -u +%s) $NODE_NAME" >> /data/log
+                sleep 1
+              done
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: zrs-data

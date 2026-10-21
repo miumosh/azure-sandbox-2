@@ -1,0 +1,31 @@
+# ============================================================================
+# このディレクトリ単体でも ignore が効くようにするためのローカル .gitignore
+# (リポジトリ直下の .gitignore と重複するが、このディレクトリだけを別リポジトリに
+#  切り出した / サブモジュール化した場合でも terraform.tfvars が漏れないようにする)
+# ============================================================================
+
+# 実値を書いた tfvars。sample はテンプレートなので追跡する
+terraform.tfvars
+*.auto.tfvars
+!terraform.tfvars.sample
+!*.tfvars.sample
+!*.tfvars.example
+
+# プロバイダのローカルキャッシュ
+.terraform/
+# ロックファイルはバージョン固定のためコミットする
+!.terraform.lock.hcl
+
+# ローカル state
+*.tfstate
+*.tfstate.*
+.terraform.tfstate.lock.info
+
+# plan 出力 / 検証ログ
+*.tfplan
+tf.plan
+crash.log
+crash.*.log
+
+# 検証スクリプトが吐く実機ログ (実リソース ID / サブスクリプション ID を含む)
+out/

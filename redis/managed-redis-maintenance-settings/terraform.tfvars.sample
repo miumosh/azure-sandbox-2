@@ -1,0 +1,13 @@
+# terraform.tfvars.sample -> terraform.tfvars にコピーして使用する
+subscription_id = "00000000-0000-0000-0000-000000000000"
+
+# Managed Redis 対応リージョンであること
+# location = "japaneast"
+
+# 検証の主スイッチ。時刻は UTC (JST = UTC+9)。
+# 制約: 週 2 ウィンドウ以上 / 各 4 時間以上 / 合計 18 時間以上
+# 例: 土日の JST 02:00-11:00 (UTC 17:00-翌02:00) に 9 時間ずつ = 合計 18 時間
+maintenance_windows = [
+  { day_of_week = "Friday", start_hour_utc = 17, duration_hours = 9 },
+  { day_of_week = "Saturday", start_hour_utc = 17, duration_hours = 9 },
+]

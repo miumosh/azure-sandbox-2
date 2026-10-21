@@ -1,0 +1,13 @@
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+.terraform.tfstate.lock.info
+*.tfplan
+crash.log
+crash.*.log
+
+# 実値を入れた tfvars は除外 (example のみ追跡)
+*.tfvars
+*.tfvars.json
+!*.tfvars.example

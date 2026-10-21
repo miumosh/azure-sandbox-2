@@ -1,0 +1,6 @@
+src_subscription_id = "00000000-0000-0000-0000-000000000000" # サブスク A
+dst_subscription_id = "00000000-0000-0000-0000-000000000000" # サブスク B
+location            = "japaneast"
+
+# az ad user show --id test-user-01@<tenant>.onmicrosoft.com --query id -o tsv
+operator_object_id = "00000000-0000-0000-0000-000000000000"

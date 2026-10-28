@@ -1,0 +1,25 @@
+# terraform.tfvars.sample -> terraform.tfvars にコピーして使用する
+# terraform.tfvars は .gitignore 済み。実値はこのファイル (sample) には書かないこと。
+subscription_id = "00000000-0000-0000-0000-000000000000"
+
+# location = "japaneast"
+
+# 検証対象の絞り込み (既定はすべて true)。費用は README の見積もりを参照
+# targets = {
+#   storage    = true
+#   containers = true
+#   postgresql = true
+#   cosmosdb   = true
+# }
+
+# true にするとサブスクリプション内の既存リソースも課金対象になる
+# enable_subscription_level_plans = false
+
+# マルウェアスキャンの月間上限 (GB / アカウント)
+# storage_malware_scanning_cap_gb = 1
+
+# az ad signed-in-user show --query userPrincipalName -o tsv
+postgresql_entra_admin_upn = "user@example.com"
+
+# PostgreSQL / Cosmos DB に接続する端末のグローバル IP (curl -s https://ifconfig.me)
+# allowed_client_ips = ["203.0.113.10"]

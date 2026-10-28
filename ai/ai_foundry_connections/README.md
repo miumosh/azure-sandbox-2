@@ -49,9 +49,9 @@ Hub ベースは Learn 上で「legacy support」と明記されている
 
 | ファイル | 内容 |
 |---|---|
-| [01_dependent-resources.md](01_dependent-resources.md) | 必要な外部リソースの一覧、役割、Hub / Project との関係、作成後の制約 |
+| [01_dependent-resources.md](01_dependent-resources.md) | **§0 AI Foundry (Hub / Project) と Azure ML の関係**、必要な外部リソースの一覧、役割、Hub / Project との関係、作成後の制約 |
 | [02_shared-vs-dedicated.md](02_shared-vs-dedicated.md) | 専用・共有の推奨と理由、共有する場合の条件 |
-| [03_keyvault-activities.md](03_keyvault-activities.md) | Key Vault で起きること (検知した 3 つのアクティビティの解説) |
+| [03_keyvault-activities.md](03_keyvault-activities.md) | Key Vault で起きること (検知した 3 つのアクティビティの解説、Azure ML 向け Q&A が Hub に当てはまるかの補足) |
 | [04_storage-activities.md](04_storage-activities.md) | Storage Account で起きること (コンテナ、ロール、CORS、診断ログの受け皿) |
 | [05_sources.md](05_sources.md) | 出典一覧 (確度、更新日付き) |
 

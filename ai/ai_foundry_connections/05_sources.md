@@ -29,6 +29,7 @@
 | # | 種別 | タイトル / URL | 日付 | 内容 |
 |---|---|---|---|---|
 | B1 | Microsoft Q&A (MS 社員回答) | [Provisioning of new workspace is adding a Key Vault diagnostic setting to the Storage Account](https://learn.microsoft.com/en-us/answers/questions/1250547/provisioning-of-new-workspace-is-adding-a-key-vaul) | 2023-04-20 / 回答 04-26 | `KeyVaultLogging` は 2023-02 の変更。目的・無効化不可・削除可 |
+| B0 | MS Blog (Azure 公式) | [Microsoft Azure AI, data, and application innovations ...](https://azure.microsoft.com/en-us/blog/microsoft-azure-ai-data-and-application-innovations-help-turn-your-ai-ambitions-into-reality/) | 2023-11-15 | Ignite 2023 で Azure AI Studio (Hub の前身) のパブリックプレビューを発表。Q&A (B1) がそれより前だという時系列の根拠 |
 | B2 | GitHub Issue (HashiCorp azurerm) | [#22237 Key vault access policy for managed identity appears for no reason ...](https://github.com/hashicorp/terraform-provider-azurerm/issues/22237) | 2023-06-21 (Open) | ML ワークスペースの MI のアクセスポリシーが Terraform 管理外で再作成される |
 
 ## C: このリポジトリでの実機観測

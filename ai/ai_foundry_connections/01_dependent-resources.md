@@ -2,6 +2,56 @@
 
 ← [README](README.md)
 
+## 0. 前提: AI Foundry (Hub / Project) と Azure Machine Learning の関係
+
+Microsoft Q&A や GitHub Issue では「Azure ML ワークスペース」として書かれている情報が多い。
+それらが AI Foundry (Hub ベース) に当てはまるかどうかを判断するために、両者の関係を先に整理する。
+
+### 0.1 結論: Hub も Project も「Azure ML ワークスペース」の一種 (kind 違い) **(A)**
+
+| 呼び方 | ARM リソース型 | `kind` | 依存リソース (Storage / KV 等) | 使えるポータル |
+|---|---|---|---|---|
+| Azure ML ワークスペース (従来) | `Microsoft.MachineLearningServices/workspaces` | `default` | **自分で持つ** | ML Studio |
+| **AI Foundry Hub** | `Microsoft.MachineLearningServices/workspaces` | **`hub`** | **自分で持つ** (Project に共有) | Foundry (classic) / ML Studio |
+| **AI Foundry Project (Hub ベース)** | `Microsoft.MachineLearningServices/workspaces` | **`project`** | **持たない** (Hub から継承) | Foundry (classic) / ML Studio |
+| (参考) Foundry リソース (新) | `Microsoft.CognitiveServices/accounts` (+ `/projects`) | `AIServices` | 既定は Microsoft 管理 | Foundry (新) |
+
+一次情報の記述:
+
+- 「Foundry AI Hub is an **implementation of Azure Machine Learning** and requires multiple Azure services as dependencies.」
+  リソース表で Hub は `Microsoft.MachineLearningServices/workspace` / kind `hub`、Hub の Project は同じ型の kind `project`
+  ([ai-resources](https://learn.microsoft.com/en-us/azure/foundry-classic/concepts/ai-resources), ms.date 2025-12-24)
+- 「Hub workspaces are **the same resource type as Microsoft Foundry hubs**, so you can use them from both Azure Machine Learning studio and Foundry.」
+  ([concept-workspace](https://learn.microsoft.com/en-us/azure/machine-learning/concept-workspace?view=azureml-api-2), ms.date 2026-02-10)
+- 「Hub resources are available in Foundry portal, Azure Machine Learning studio, and the Azure portal.」(A1)
+- ワークスペースの kind は `default` / `hub` / `project` の 3 種類
+  ([identity-based auth - Default behavior by workspace kind](https://learn.microsoft.com/en-us/azure/machine-learning/how-to-identity-based-service-authentication?view=azureml-api-2))
+- Terraform の `azurerm_ai_foundry` / `azurerm_ai_foundry_project` も実体はこのリソース型 (C: `../ai_foundry_keyvault_relation/README.md` のスコープ注記)
+
+```mermaid
+flowchart TB
+  RP["リソースプロバイダ<br/>Microsoft.MachineLearningServices"]
+  RP --> WS["workspaces kind=default<br/>(従来の Azure ML ワークスペース)"]
+  RP --> HUB["workspaces kind=hub<br/>(AI Foundry Hub)"]
+  RP --> PJ["workspaces kind=project<br/>(AI Foundry Project)"]
+  PJ -- hubResourceId --> HUB
+  WS --> DEP1["Storage / KV / ACR / AppI<br/>(自分で持つ)"]
+  HUB --> DEP2["Storage / KV / ACR / AppI<br/>(自分で持ち Project に共有)"]
+```
+
+### 0.2 Azure ML 向けの情報を AI Foundry に当てはめるときの考え方
+
+| Azure ML の情報の種類 | Hub に当てはまるか | Project に当てはまるか | 理由 / 確度 |
+|---|---|---|---|
+| 依存リソースの作成・権限付与 (KV / Storage への処理) | **当てはまる** | **一部**。依存リソースは持たないが、自分の MI への権限付与は受ける | 同じ RP・同じ型で、依存リソースを持つのは `default` と `hub`。Project の MI にも KV のアクセスポリシーが付く (A + C) |
+| マネージド ID の権限 (concept-enterprise-security の表) | 当てはまる | 当てはまる | ワークスペース共通の記述 (A)。ただし 2024-11-19 以降は Contributor ではなく Azure AI Administrator (A) |
+| データ分離 (`enableDataIsolation`) | 既定で有効 | 既定で有効 (継承) | `default` は既定で無効なので、Azure ML の記事の例とは前提が違う (A) |
+| コンピュートクラスター、BYO VNet など | **当てはまらない** | 当てはまらない | Hub / Project ではサポートされない機能がある (A, concept-hub-workspace の比較表) |
+
+ポイント: **Key Vault / Storage に対する処理は、依存リソースを持つワークスペース (= `default` または `hub`) を作ったときの RP の挙動**である。
+AI Foundry では **Hub の作成が Azure ML ワークスペースの作成に当たる**。
+Project の作成は「Hub の依存リソースに、Project の MI 用の権限を足す」処理に当たる。
+
 ## 1. 依存リソースの一覧 (Hub ベース)
 
 Hub は「Azure Machine Learning の実装」であり、複数の Azure サービスに依存する。

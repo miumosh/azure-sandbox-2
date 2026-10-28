@@ -81,6 +81,23 @@ Azure ML のリソースプロバイダ (RP) が次の 3 つを自動で行う�
   > **This should not affect the ML workspace** but activity logging of KV will be lost.
 - 「無効化オプションは今後出るか」という追加の質問には回答がない (2026-10 時点で未解決)。
 
+#### 補足: この Q&A は「Azure ML」の話だが AI Foundry (Hub) にも当てはまるのか
+
+| 観点 | 内容 | 確度 |
+|---|---|---|
+| Q&A の対象 | 2023-04 時点の **Azure ML ワークスペース** (`Microsoft.MachineLearningServices/workspaces`、当時は実質 `kind=default` のみ) | B |
+| 時系列 | Q&A (2023-04) は、Hub の前身である Azure AI Studio のパブリックプレビュー発表 ([Azure Blog, 2023-11-15](https://azure.microsoft.com/en-us/blog/microsoft-azure-ai-data-and-application-innovations-help-turn-your-ai-ambitions-into-reality/)) より**前**。したがって Q&A は Hub / Project に直接は言及していない | A |
+| 型の同一性 | AI Foundry Hub は同じ `Microsoft.MachineLearningServices/workspaces` の `kind=hub` で、「Azure Machine Learning の実装」と公式に明記されている ([01 §0](01_dependent-resources.md)) | A |
+| 実機での再現 | Hub ベースの AI Foundry を作成した環境で、Q&A と同じ名前・同じ送信先 (紐づけた Storage) の `KeyVaultLogging` が観測されている (本調査の依頼内容) | C |
+| 結論 | Q&A の内容 (目的・無効化不可・削除可) は、**同じ RP がワークスペース作成時に行う処理として Hub にもそのまま当てはまる**と判断する。ただし MS が Hub について明言したものではない | B + C から推論 (D) |
+
+**Hub と Project のどちらで発生するか:**
+
+- 診断設定の送信先は「ワークスペースに紐づけた Storage」。依存リソース (Storage / KV) を持つのは **Hub だけ**で、Project は持たない (A)。
+- そのため `KeyVaultLogging` は **Hub を作ったときの処理**と考えられる。Project の作成で 2 つ目の設定が足されたり、送信先が変わったりはしない (D)。
+- 一方、③ `Update Access Policy` は Hub と Project の**両方**で起きる。これは依存リソースの「設定」ではなく、各ワークスペースの MI への「権限付与」だから (§3.1)。
+- 確実に切り分けるには、KV のアクティビティログで `Microsoft.Insights/diagnosticSettings/write` の caller とタイムスタンプを確認し、Hub と Project の作成時刻と突き合わせる (§4 のコマンド)。
+
 ### 2.2 観測された内容と意味
 
 | 項目 | 観測値 (ユーザー提供) | 解説 | 確度 |

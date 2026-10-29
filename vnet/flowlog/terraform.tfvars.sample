@@ -1,0 +1,22 @@
+# terraform.tfvars.sample -> terraform.tfvars にコピーして使用する
+# terraform.tfvars は .gitignore 済み。実値はこのファイル (sample) には書かないこと。
+subscription_id = "00000000-0000-0000-0000-000000000000"
+
+# location = "japaneast"
+
+# Disabled (既定) / Enabled (= selected networks)
+# storage_public_network_access = "Disabled"
+
+# false にすると Network Watcher が書き込めなくなることを確認できる
+# storage_bypass_azure_services = true
+
+# storage_public_network_access = "Enabled" のときに Blob を閲覧する端末のグローバル IP (curl -s https://ifconfig.me)
+# allowed_client_ips = ["203.0.113.10"]
+
+# 既存 Network Watcher (az network watcher list -o table)
+# network_watcher = {
+#   name                = "NetworkWatcher_japaneast"
+#   resource_group_name = "NetworkWatcherRG"
+# }
+
+# create_test_vm = true

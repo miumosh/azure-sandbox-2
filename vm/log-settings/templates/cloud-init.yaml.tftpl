@@ -1,0 +1,55 @@
+#cloud-config
+# ----------------------------------------------------------------------------
+# サンプルアプリ: 1 分ごとに INFO ログを 1 行追記する systemd タイマー
+#   書式: <ISO 8601 時刻> <LEVEL> <メッセージ>
+#   例  : 2026-10-29T08:00:00Z INFO heartbeat from sampleapp
+# ERROR はアラート確認用に手動で書き込む (README 参照)
+# ----------------------------------------------------------------------------
+write_files:
+  - path: /usr/local/bin/sampleapp-heartbeat
+    permissions: "0755"
+    content: |
+      #!/bin/sh
+      echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) INFO heartbeat from sampleapp" >> ${log_path}
+
+  - path: /etc/systemd/system/sampleapp-heartbeat.service
+    content: |
+      [Unit]
+      Description=sampleapp heartbeat log writer
+
+      [Service]
+      Type=oneshot
+      ExecStart=/usr/local/bin/sampleapp-heartbeat
+
+  - path: /etc/systemd/system/sampleapp-heartbeat.timer
+    content: |
+      [Unit]
+      Description=write sampleapp heartbeat every minute
+
+      [Timer]
+      OnCalendar=*-*-* *:*:00
+      Persistent=true
+
+      [Install]
+      WantedBy=timers.target
+
+  # AMA はローテートされたファイルも名前が変わっても追跡できるが、
+  # file_patterns に一致しない名前へ移すと読まれない。ここでは日次で app.log.1 ... に回す
+  - path: /etc/logrotate.d/sampleapp
+    content: |
+      ${log_dir}/*.log {
+        daily
+        rotate 7
+        missingok
+        notifempty
+        compress
+        delaycompress
+        create 0644 root root
+      }
+
+runcmd:
+  # AMA は syslog ユーザーで動くため、ディレクトリ / ファイルを読めるようにしておく
+  - install -d -m 0755 ${log_dir}
+  - install -m 0644 /dev/null ${log_path}
+  - systemctl daemon-reload
+  - systemctl enable --now sampleapp-heartbeat.timer

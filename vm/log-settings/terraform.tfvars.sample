@@ -1,0 +1,14 @@
+# terraform.tfvars.sample -> terraform.tfvars にコピーして使用する
+# terraform.tfvars は .gitignore 済み。実値はこのファイル (sample) には書かないこと。
+subscription_id = "00000000-0000-0000-0000-000000000000"
+
+# location = "japaneast"
+
+# アラートのメール通知先 (個人のアドレスは terraform.tfvars にだけ書く)。空ならアクショングループを作らない
+# alert_email_addresses = ["someone@example.com"]
+
+# log_analytics_retention_in_days = 30
+# log_analytics_daily_quota_gb    = 1
+
+# Syslog として収集する重要度
+# syslog_log_levels = ["Info", "Notice", "Warning", "Error", "Critical", "Alert", "Emergency"]
